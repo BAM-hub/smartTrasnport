@@ -9,13 +9,16 @@ import GetLocation from 'react-native-get-location';
 import { io } from 'socket.io-client';
 import MapScreen from './MapScreen';
 
+const SOCKET_URL = 'http://192.168.1.71:5000';
 
 const ScreenProvider = () => {
+  const [markers, setMarkers] = useState([]);
   const [location, setLocation] = useState({
     longitude: 0,
     latitude: 0
   });
   const [user, setUser] = useState({
+    name: '',
     type: '',
     line: '',
     id: ''
@@ -45,30 +48,44 @@ const ScreenProvider = () => {
   // const [socket, setSocket] = useState(io(SOCKET_URL));
   // console.log(socket);
 
-  // useEffect(() => {
-  //   const socket = io(SOCKET_URL);
-  //   console.log(user);
-  //   socket.emit('join', {
-  //     ...user,
-  //     cords: location
-  //   });
-  //   return () => {
-  //     //socket.off('connection');
-  //     //socket.off('join');
-  //     socket.close();
-  //   }
-  // }, [setUser]);
+  useEffect(() => {
+    const socket = io(SOCKET_URL);
+    if(user.type !== '' && location.longitude !== 0 && location.latitude !== 0) {
+      console.log(user);
+      // console.log(socket);
+      socket?.emit('join', {
+        ...user,
+        cords: location
+      });
+    }
+    socket?.on('initial-coords', markerCords => {
+      console.log('markers: ', markerCords);
+        if(markers.length !== 0)
+          return;
+        setMarkers(markerCords);
+    });
+
+    return () => {
+      socket?.off('connection');
+      socket?.off('join');
+      socket?.close();
+    }
+  }, [user.type, location.latitude, location.latitude]);
 
   return (
     <View style={styles.container}>
-    {/* { location.latitude === 0 || user.type === '' ? <LoadScreen 
+    { location.latitude === 0 || user.type === '' ? <LoadScreen 
       setLocation={setLocation}
       user={user}
       setUser={setUser}
     /> 
     : user.type === 'none' ? <RegisterScreen setUser={setUser} />
-    : <MapScreen location={location} user={user} /> } */}
-    <RegisterScreen />
+    : <MapScreen 
+        location={location}
+        user={user}
+        markers={markers}
+      /> }
+    {/* <RegisterScreen /> */}
   </View>
   );
 };

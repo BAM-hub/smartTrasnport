@@ -6,9 +6,37 @@ import {
   Dimensions,
   Text
 } from 'react-native';
+import { useEffect } from 'react';
+import GetLocation from 'react-native-get-location';
+
+
 
 
 const Map = ({markers, location, user}) => {
+  // const getPostition = () => {
+  //   GetLocation.getCurrentPosition({
+  //     enableHighAccuracy: true,
+  //     timeout: 15000,
+  //   })
+  //   .then(location => {
+  //     console.log(location);
+  //     // setLocation({
+  //     //   longitude: location.longitude,
+  //     //   latitude: location.latitude
+  //     // });
+  //   })
+  //   .catch(error => {
+  //       const { code, message } = error;
+  //       console.warn(code, message);
+  //   });
+  // }
+  // useEffect(() => {
+  //   const interval = setInterval(() =>getPostition(), 5000);
+  //   return () => {
+  //     clearInterval(interval);
+  //   }
+  // }, []);
+  
   return ( 
     <MapView 
     style={styles.map}

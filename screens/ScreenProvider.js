@@ -8,9 +8,7 @@ import RegisterScreen from './RegisterScreen';
 import { io } from 'socket.io-client';
 import MapScreen from './MapScreen';
 import axios from 'axios';
-
-const SOCKET_URL = 'http://192.168.1.71:8000';
-const API_KEY = 'AIzaSyCRqhSOtId37KlfnUoe8HYheJqbuzMn2Co';
+import { SOCKET_URL, API_KEY } from '../config';
 
 const ScreenProvider = () => {
   const origin = { latitude: 31.966882, longitude: 35.988638 };

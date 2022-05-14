@@ -37,11 +37,11 @@ const MapScreen = ({ location, user, markers }) => {
 
   return (
       <>
-        {/* <Map 
+        <Map 
           location={location}
           user={user}
           markers={markers}
-        /> */}
+        />
       </>
   );
 };

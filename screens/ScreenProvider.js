@@ -25,9 +25,6 @@ const ScreenProvider = () => {
     id: ''
   });
 
-
-
-
   // const [socket, setSocket] = useState(io(SOCKET_URL));
   // console.log(socket);
 
@@ -111,6 +108,8 @@ const ScreenProvider = () => {
         location={origin}
         user={user}
         markers={markers}
+        origin={origin}
+        destination={destination}
       /> }
     {/* <RegisterScreen /> */}
   </View>

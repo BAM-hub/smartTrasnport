@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { 
+  View
+} from 'react-native';
 import Map from '../components/Map';
+import Helper from '../components/Helper';
 
-
-
-
-const MapScreen = ({ location, user, markers }) => {
-
+const MapScreen = ({ location, user, markers, origin, destination }) => {
+  const [showHelper, setShowHelper] = useState(false);
   // useEffect(() => {
   //   const socket = io(SOCKET_URL, {
   //     transports: ["websocket"]
@@ -36,13 +37,23 @@ const MapScreen = ({ location, user, markers }) => {
 
 
   return (
-      <>
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
         <Map 
           location={location}
           user={user}
           markers={markers}
+          setShowHelper={setShowHelper}
+          origin={origin}
+          destination={destination}
         />
-      </>
+        {showHelper && 
+            <Helper setShowHelper={setShowHelper} />
+        }
+      </View>
   );
 };
 

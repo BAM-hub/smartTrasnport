@@ -8,11 +8,11 @@ import {
 } from 'react-native';
 import { useEffect } from 'react';
 import GetLocation from 'react-native-get-location';
+import { mapDarkStyle } from '../config';
+import Road from './Road';
 
 
-
-
-const Map = ({markers, location, user}) => {
+const Map = ({markers, location, user, setShowHelper, origin, destination}) => {
   // const getPostition = () => {
   //   GetLocation.getCurrentPosition({
   //     enableHighAccuracy: true,
@@ -39,45 +39,32 @@ const Map = ({markers, location, user}) => {
   
   return ( 
     <MapView 
-    style={styles.map}
-    initialRegion={{
-      ...location,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    }}
+      customMapStyle={mapDarkStyle}
+      // showsTraffic={true}
+      style={styles.map}
+      initialRegion={{
+        ...location,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}
     >
       {/* {markers.map((marker, i) => ( */}
-        <Marker 
-          style={{width: 30, height: 30}} 
-          coordinate={location}
-          // key={i}
-          // pinColor='green' 
-          // description={`no ${i}`} 
-          >
-          {user.type === 'passenger' ? <Icon name='bus' size={30} /> : <Icon name='human-greeting' size={20} />}
-        </Marker>
+      <Marker 
+        onPress={() => {
+          setShowHelper(true);
+        }}
+        style={{width: 30, height: 30}} 
+        coordinate={location}
+        // key={i}
+        // pinColor='green' 
+      >
+        {user.type === 'passenger' ? 
+          <Icon name='bus' size={30} style={{color: 'white'}} /> 
+          : <Icon name='human-greeting' size={20} style={{color: 'white'}} />
+        }
+      </Marker>
       {/* ))} */}
-      {/* <Polyline 
-        coordinates={[
-          {
-            ...location
-          },
-          {
-            latitude: -122.089435,
-            longitude: 37.422644,
-          }
-        ]}
-        strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
-        strokeColors={[
-          '#7F0000',
-          '#00000000', // no color, creates a "long" gradient between the previous and next coordinate
-          '#B24112',
-          '#E5845C',
-          '#238C23',
-          '#7F0000'
-        ]}
-        strokeWidth={6}
-      /> */}
+      <Road  origin={origin} destination={destination}/>
     </MapView>
   );
 }

@@ -6,6 +6,7 @@ import Map from '../components/Map';
 import Helper from '../components/Helper';
 
 const MapScreen = ({ location, user, markers }) => {
+  const [showRoad, setShowRoad] = useState(false);
   const [showHelper, setShowHelper] = useState(false);
   return (
       <View
@@ -18,9 +19,14 @@ const MapScreen = ({ location, user, markers }) => {
           user={user}
           markers={markers}
           setShowHelper={setShowHelper}
+          showRoad={showRoad}
+          setShowRoad={setShowRoad}
         />
         {showHelper && 
-            <Helper setShowHelper={setShowHelper} />
+          <Helper
+            setShowHelper={setShowHelper} 
+            setShowRoad={setShowRoad}
+          />
         }
       </View>
   );

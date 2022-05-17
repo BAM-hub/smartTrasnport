@@ -8,7 +8,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-const Helper = ({ setShowHelper }) => {
+const Helper = ({ setShowHelper, setShowRoad }) => {
   return (
     <View
       style={{
@@ -23,7 +23,10 @@ const Helper = ({ setShowHelper }) => {
         name='close'
         size={30}
         style={{color: 'white'}}
-        onPress={() => setShowHelper(false)}  
+        onPress={() => {
+          setShowRoad(false);
+          setShowHelper(false);
+        }}  
       />
       <ScrollView 
         horizontal={true}

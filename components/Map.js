@@ -9,9 +9,14 @@ import {
 import { mapDarkStyle } from '../config';
 import Road from './Road';
 
-
-const Map = ({markers, location, user, setShowHelper}) => {
-  
+const Map = ({
+  markers,
+  location, 
+  user, 
+  setShowHelper, 
+  setShowRoad, 
+  showRoad
+}) => {
   return ( 
     <MapView 
       customMapStyle={mapDarkStyle}
@@ -26,6 +31,7 @@ const Map = ({markers, location, user, setShowHelper}) => {
       {/* {markers.map((marker, i) => ( */}
       <Marker 
         onPress={() => {
+          setShowRoad(true);
           setShowHelper(true);
         }}
         style={{width: 30, height: 30}} 
@@ -39,7 +45,7 @@ const Map = ({markers, location, user, setShowHelper}) => {
         }
       </Marker>
       {/* ))} */}
-      <Road />
+      { showRoad && <Road  />}
     </MapView>
   );
 }

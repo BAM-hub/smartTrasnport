@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { landmarks } from '../data';
 import { API_KEY } from '../config';
 
-const Road = ({ origin, destination }) => {
+const Road = () => {
   const [road, setRoad] = useState(null);
   useEffect(async () => {
     let path = landmarks.map((landmark, i) => `${landmark.latitude},${landmark.longitude}`);

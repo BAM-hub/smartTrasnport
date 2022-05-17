@@ -1,4 +1,4 @@
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   StyleSheet,
@@ -6,36 +6,11 @@ import {
   Dimensions,
   Text
 } from 'react-native';
-import { useEffect } from 'react';
-import GetLocation from 'react-native-get-location';
 import { mapDarkStyle } from '../config';
 import Road from './Road';
 
 
-const Map = ({markers, location, user, setShowHelper, origin, destination}) => {
-  // const getPostition = () => {
-  //   GetLocation.getCurrentPosition({
-  //     enableHighAccuracy: true,
-  //     timeout: 15000,
-  //   })
-  //   .then(location => {
-  //     console.log(location);
-  //     // setLocation({
-  //     //   longitude: location.longitude,
-  //     //   latitude: location.latitude
-  //     // });
-  //   })
-  //   .catch(error => {
-  //       const { code, message } = error;
-  //       console.warn(code, message);
-  //   });
-  // }
-  // useEffect(() => {
-  //   const interval = setInterval(() =>getPostition(), 5000);
-  //   return () => {
-  //     clearInterval(interval);
-  //   }
-  // }, []);
+const Map = ({markers, location, user, setShowHelper}) => {
   
   return ( 
     <MapView 
@@ -64,7 +39,7 @@ const Map = ({markers, location, user, setShowHelper, origin, destination}) => {
         }
       </Marker>
       {/* ))} */}
-      <Road  origin={origin} destination={destination}/>
+      <Road />
     </MapView>
   );
 }

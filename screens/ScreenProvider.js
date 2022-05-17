@@ -9,10 +9,11 @@ import { io } from 'socket.io-client';
 import MapScreen from './MapScreen';
 import axios from 'axios';
 import { SOCKET_URL, API_KEY } from '../config';
+import GetLocation from 'react-native-get-location';
 
 const ScreenProvider = () => {
   const origin = { latitude: 31.966882, longitude: 35.988638 };
-  const destination = { latitude: 31.963817, longitude: 35.975449};
+  // const destination = { latitude: 31.963817, longitude: 35.975449};
   const [markers, setMarkers] = useState([]);
   const [location, setLocation] = useState({
     longitude: 0,
@@ -24,34 +25,7 @@ const ScreenProvider = () => {
     line: '',
     id: ''
   });
-
-  // const [socket, setSocket] = useState(io(SOCKET_URL));
-  // console.log(socket);
-
-  // useEffect(() => {
-  //   const socket = io(SOCKET_URL);
-  //   if(user.type !== '' && location.longitude !== 0 && location.latitude !== 0) {
-  //     console.log(user);
-  //     // console.log(socket);
-  //     // socket?.emit('join', {
-  //     //   ...user,
-  //     //   cords: location
-  //     // });
-  //   }
-  //   socket?.on('initial-coords', markerCords => {
-  //     console.log('markers: ', markerCords);
-  //       if(markers.length !== 0)
-  //         return;
-  //       setMarkers(markerCords);
-  //   });
-
-  //   return () => {
-  //     socket?.off('connection');
-  //     socket?.off('join');
-  //     socket?.close();
-  //   }
-  // }, [user.type, location.latitude, location.latitude]);
-
+  // get distance
   // useEffect(async () => {
   //   try {
   //     const config = {
@@ -65,6 +39,7 @@ const ScreenProvider = () => {
   //     console.log(err);
   //   }
   // }, []);
+
   useEffect(() => {
     const socket = io(SOCKET_URL, {
       transports: ["websocket"]
@@ -76,22 +51,43 @@ const ScreenProvider = () => {
         console.log('connected!');
         socket.emit("my_event", { data: "do u hear me" });
       });
+    } else {
+      socket.disconnect();
     }
+    // get location every seconds
+    const interval = setInterval(() => {
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
+      })
+      .then(location => {
+        // console.log(location);
+        // setLocation({
+        //   longitude: location.longitude,
+        //   latitude: location.latitude
+        // });
+      })
+      .catch(error => {
+          const { code, message } = error;
+          console.warn(code, message);
+      });
+    }, 5000);
+    // save user in server memory
     socket?.emit('user_live',
      {...user, cords: location}
     );
+    // listen to initial coords
     socket?.on('initial-coords', markerCords => {
       console.log('markers: ', markerCords);
         if(markers.length !== 0)
           return;
         setMarkers(markerCords);
     });
-    console.log(socket.connected);
-    console.log(markers);
     return () => {
       socket?.off('connection');
       socket?.off('join');
       socket.close();
+      clearInterval(interval);
     }
   }, [user.type, location.latitude, location.latitude]);
 
@@ -108,8 +104,6 @@ const ScreenProvider = () => {
         location={origin}
         user={user}
         markers={markers}
-        origin={origin}
-        destination={destination}
       /> }
     {/* <RegisterScreen /> */}
   </View>

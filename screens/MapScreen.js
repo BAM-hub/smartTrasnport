@@ -26,6 +26,7 @@ const MapScreen = ({ location, user, markers }) => {
           <Helper
             setShowHelper={setShowHelper} 
             setShowRoad={setShowRoad}
+            user={user}
           />
         }
       </View>

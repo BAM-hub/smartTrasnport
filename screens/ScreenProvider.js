@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
 } from 'react-native';
 import LoadScreen from './LoadScreen';
 import RegisterScreen from './RegisterScreen';
-import { io } from 'socket.io-client';
 import MapScreen from './MapScreen';
 import axios from 'axios';
-import { SOCKET_URL, API_KEY } from '../config';
+import { API_KEY } from '../config';
 import GetLocation from 'react-native-get-location';
+import { SocketContext } from '../context/socket';
 
 const ScreenProvider = () => {
   const origin = { latitude: 31.966882, longitude: 35.988638 };
@@ -19,6 +19,7 @@ const ScreenProvider = () => {
     longitude: 0,
     latitude: 0
   });
+  const socket = useContext(SocketContext);
   const [user, setUser] = useState({
     name: '',
     type: '',
@@ -41,15 +42,12 @@ const ScreenProvider = () => {
   // }, []);
 
   useEffect(() => {
-    const socket = io(SOCKET_URL, {
-      transports: ["websocket"]
-    });
     if(user.type !== '' && location.longitude !== 0 && location.latitude !== 0) {
       socket.connect();
       // console.log(socket);
       socket.on("connect", ()  => {
         console.log('connected!');
-        socket.emit("my_event", { data: "do u hear me" });
+        socket.emit('join', user);
       });
     } else {
       socket.disconnect();
@@ -83,6 +81,7 @@ const ScreenProvider = () => {
           return;
         setMarkers(markerCords);
     });
+
     return () => {
       socket?.off('connection');
       socket?.off('join');

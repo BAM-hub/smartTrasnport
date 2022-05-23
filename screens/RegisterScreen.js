@@ -12,7 +12,6 @@ import SubmitInput from '../components/SubmitButton';
 import UserInfoInput from '../components/UserInfoInput';
 import UserTypeInput from '../components/UserTypeInput';
 import bak from '../asset/bak.webp';
-import { Dimensions } from 'react-native-web';
 
 const RegisterScreen = ({ setUser }) => {
   const [checked, setChecked] = useState('none');

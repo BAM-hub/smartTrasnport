@@ -31,6 +31,7 @@ const MapScreen = () => {
             setShowHelper={setShowHelper} 
             setShowRoad={setShowRoad}
             setFocusLocation={setFocusLocation}
+            showHelper={showHelper}
           />
         }
       </View>

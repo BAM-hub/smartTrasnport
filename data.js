@@ -1,3 +1,5 @@
+// const origin = { latitude: 31.966882, longitude: 35.988638 };
+// const destination = { latitude: 31.963817, longitude: 35.975449};
 export const drivers = [
   {
     id: 0,

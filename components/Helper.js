@@ -18,7 +18,7 @@ const SCROLL_OFFSET = parseInt(
   CARD_WIDTH + (SCROLL_WIDTH - CARD_WIDTH) * 2
 );
 
-const Helper = ({ setShowHelper, setShowRoad, setFocusLocation }) => {
+const Helper = ({ setShowHelper, setShowRoad, setFocusLocation, showHelper }) => {
   const [scrollX, setScrollX] = useState(0);
   const [user] = useContext(UserContext);
   // const [drivers, setDrivers] = useState(DATA);
@@ -32,6 +32,21 @@ const Helper = ({ setShowHelper, setShowRoad, setFocusLocation }) => {
       socket.off('rideResponse');
     }
   }, []);
+
+  useEffect(async () => {
+    console.log(scrollX);
+      // try {
+      //   const config = {
+      //     method: 'get',
+      //     url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
+      //     headers: {}
+      //   };
+      //   const res = await axios(config);
+      //   console.log(JSON.stringify(res.data));
+      // } catch (err) {
+      //   console.log(err);
+      // }
+  }, [scrollX, showHelper]);
 
   const handelCardPress = i => {
     // console.log(e);
@@ -47,24 +62,8 @@ const Helper = ({ setShowHelper, setShowRoad, setFocusLocation }) => {
         parseInt(e.nativeEvent.contentOffset.x)/SCROLL_OFFSET
       )
     );
-    //api request for distance based on drivers location
-    // get distance
-    // useEffect(async () => {
-    //   try {
-    //     const config = {
-    //       method: 'get',
-    //       url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
-    //       headers: {}
-    //     };
-    //     const res = await axios(config);
-    //     console.log(JSON.stringify(res.data));
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-  // }, []);
     // show driver line
     // change drivers state with new info
-
   };
   return (
     <View style={styles.container}>

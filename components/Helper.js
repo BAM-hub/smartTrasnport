@@ -9,36 +9,20 @@ import {
   StyleSheet
 } from 'react-native';
 import { SocketContext } from '../context/socket';
+import { DATAContext } from '../context/DATAContext';
+import { UserContext } from '../context/UserContext';
 
 const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
 const SCROLL_OFFSET = parseInt(
   CARD_WIDTH + (SCROLL_WIDTH - CARD_WIDTH) * 2
 );
-const DATA = [
-  {
-    name: 'Ali',
-    line: 'Amman As-Salt',
-    distance: 'Calculating',
-    time: 'Calculating'
-  },
-  {
-    name: 'Ali',
-    line: 'Amman As-Salt',
-    distance: 'Calculating',
-    time: 'Calculating'
-  },
-  {
-    name: 'Ali',
-    line: 'Amman As-Salt',
-    distance: 'Calculating',
-    time: 'Calculating'
-  },
-];
 
-const Helper = ({ setShowHelper, setShowRoad, user }) => {
+const Helper = ({ setShowHelper, setShowRoad, setFocusLocation }) => {
   const [scrollX, setScrollX] = useState(0);
-  const [drivers, setDrivers] = useState(DATA);
+  const [user] = useContext(UserContext);
+  // const [drivers, setDrivers] = useState(DATA);
+  const data = useContext(DATAContext);
 
   useEffect(() => {
     socket.on('rideResponse', res => {
@@ -57,13 +41,27 @@ const Helper = ({ setShowHelper, setShowRoad, user }) => {
     } );
   }
   const socket = useContext(SocketContext);
-  const handelScroll = (e, i) => {
+  const handelScroll = (e) => {
     setScrollX(
       parseInt(
         parseInt(e.nativeEvent.contentOffset.x)/SCROLL_OFFSET
       )
     );
     //api request for distance based on drivers location
+    // get distance
+    // useEffect(async () => {
+    //   try {
+    //     const config = {
+    //       method: 'get',
+    //       url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
+    //       headers: {}
+    //     };
+    //     const res = await axios(config);
+    //     console.log(JSON.stringify(res.data));
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+  // }, []);
     // show driver line
     // change drivers state with new info
 
@@ -80,14 +78,14 @@ const Helper = ({ setShowHelper, setShowRoad, user }) => {
       }}
     />
       <ScrollView 
-        onScroll={e => handelScroll(e, i)}
+        onScroll={e => handelScroll(e)}
         horizontal={true}
         pagingEnabled
         style={styles.scroll}
       >
-        {drivers.map((d, i) => (
+        {data.map((d, i) => (
           <TouchableOpacity
-            onPress={() => handelCardPress(i)}
+            onPress={e => handelCardPress(e, i)}
             key={i}
             style={styles.card}
           >

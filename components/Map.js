@@ -1,5 +1,4 @@
-import MapView, { Marker } from 'react-native-maps';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MapView from 'react-native-maps';
 import {
   StyleSheet,
   View,
@@ -8,15 +7,21 @@ import {
 } from 'react-native';
 import { mapDarkStyle } from '../config';
 import Road from './Road';
+import Markers from './Markers';
+import { useState, useContext } from 'react';
+import { DATAContext } from '../context/DATAContext';
+import { LocationContext } from '../context/LocationContext';
+import { UserContext } from '../context/UserContext';
 
 const Map = ({
-  markers,
-  location, 
-  user, 
   setShowHelper, 
   setShowRoad, 
-  showRoad
+  showRoad,
+  focusLocation,
+  setFocusLocation
 }) => {
+  const [location] = useContext(LocationContext);
+  const [DATA] = useContext(DATAContext);
   return ( 
     <MapView 
       customMapStyle={mapDarkStyle}
@@ -27,24 +32,21 @@ const Map = ({
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       }}
+      region={{
+        ...focusLocation,
+        latitudeDelta: 0.0022,
+        longitudeDelta: 0.0021,
+      }}
     >
-      {/* {markers.map((marker, i) => ( */}
-      <Marker 
-        onPress={() => {
-          setShowRoad(true);
-          setShowHelper(true);
-        }}
-        style={{width: 30, height: 30}} 
-        coordinate={location}
-        // key={i}
-        // pinColor='green' 
-      >
-        {user.type === 'passenger' ? 
-          <Icon name='bus' size={30} style={{color: 'white'}} /> 
-          : <Icon name='human-greeting' size={20} style={{color: 'white'}} />
-        }
-      </Marker>
-      {/* ))} */}
+      {DATA.map((marker, i) => (
+        <Markers
+          key={i}
+          marker={marker}
+          setShowRoad={setShowRoad}
+          setShowHelper={setShowHelper}
+          setFocusLocation={setFocusLocation}
+        />
+       ))} 
       { showRoad && <Road  />}
     </MapView>
   );

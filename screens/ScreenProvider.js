@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,45 +6,23 @@ import {
 import LoadScreen from './LoadScreen';
 import RegisterScreen from './RegisterScreen';
 import MapScreen from './MapScreen';
-import axios from 'axios';
-import { API_KEY } from '../config';
 import GetLocation from 'react-native-get-location';
 import { SocketContext } from '../context/socket';
+import { MarkersContext } from '../context/MarkersContext';
+import { LocationContext } from '../context/LocationContext';
+import { UserContext } from '../context/UserContext';
 
 const ScreenProvider = () => {
-  const origin = { latitude: 31.966882, longitude: 35.988638 };
-  // const destination = { latitude: 31.963817, longitude: 35.975449};
-  const [markers, setMarkers] = useState([]);
-  const [location, setLocation] = useState({
-    longitude: 0,
-    latitude: 0
-  });
+
+  const [markers, setMarkers] = useContext(MarkersContext);
+  const [location] = useContext(LocationContext);
   const socket = useContext(SocketContext);
-  const [user, setUser] = useState({
-    name: '',
-    type: '',
-    line: '',
-    id: ''
-  });
-  // get distance
-  // useEffect(async () => {
-  //   try {
-  //     const config = {
-  //       method: 'get',
-  //       url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
-  //       headers: {}
-  //     };
-  //     const res = await axios(config);
-  //     console.log(JSON.stringify(res.data));
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }, []);
+  const [user, setUser] = useContext(UserContext);
 
   useEffect(() => {
+
     if(user.type !== '' && location.longitude !== 0 && location.latitude !== 0) {
       socket.connect();
-      // console.log(socket);
       socket.on("connect", ()  => {
         console.log('connected!');
         socket.emit('join', user);
@@ -52,6 +30,7 @@ const ScreenProvider = () => {
     } else {
       socket.disconnect();
     }
+
     // get location every seconds
     const interval = setInterval(() => {
       GetLocation.getCurrentPosition({
@@ -70,10 +49,12 @@ const ScreenProvider = () => {
           console.warn(code, message);
       });
     }, 5000);
+
     // save user in server memory
     socket?.emit('user_live',
      {...user, cords: location}
     );
+    
     // listen to initial coords
     socket?.on('initial-coords', markerCords => {
       console.log('markers: ', markerCords);
@@ -93,18 +74,16 @@ const ScreenProvider = () => {
 
   return (
     <View style={styles.container}>
-    { location.latitude === 0 || user.type === '' ? <LoadScreen 
-      setLocation={setLocation}
-      user={user}
-      setUser={setUser}
-    /> 
-    : user.type === 'none' ? <RegisterScreen setUser={setUser} />
-    : <MapScreen 
-        location={origin}
-        user={user}
-        markers={markers}
-      /> }
-    {/* <RegisterScreen /> */}
+      { 
+        location.latitude === 0 || user.type === '' ? 
+        <LoadScreen 
+          user={user}
+          setUser={setUser}
+        /> 
+        : user.type === 'none' ? 
+          <RegisterScreen setUser={setUser} />
+        : <MapScreen /> 
+      }
   </View>
   );
 };

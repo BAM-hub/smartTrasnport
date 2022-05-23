@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { View, Text } from 'react-native';
 import { IconFill } from '@ant-design/icons-react-native';
 import GetLocation from 'react-native-get-location';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LocationContext } from '../context/LocationContext';
 
-const LoadScreen = ({ setLocation, setUser }) => {
+const LoadScreen = ({ setUser }) => {
+  const [location, setLocation] = useContext(LocationContext);
   const getData = async () => {
     try {
       const auth = await AsyncStorage.getItem('@BamLocation');
-      console.log(auth);
       if(auth === null)
         return setUser({
           type: 'none',

@@ -2,15 +2,21 @@ import React, { useContext } from 'react';
 import { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { UserContext } from '../context/UserContext';
+import { HelperContext } from '../context/HelperContext';
 
-const Markers = ({ marker, setShowRoad, setShowHelper, setFocusLocation }) => {
+const Markers = ({ marker, setShowRoad, setShowHelper, setFocusLocation, index }) => {
   const [user] = useContext(UserContext);
+  const [__, setHelper] = useContext(HelperContext);
 
   return (
     <Marker 
       onPress={() => {
         setShowRoad(true);
-        setShowHelper(true);
+        setHelper({
+          state: true,
+          index,
+          scrollHelper: false
+        });
         console.log(marker.cords)
         setFocusLocation(marker.coords);
       }}

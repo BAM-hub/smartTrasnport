@@ -1,18 +1,48 @@
-import React, { useEffect, useState,useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { 
   View
 } from 'react-native';
 import Map from '../components/Map';
 import Helper from '../components/Helper';
+import ScrollHelper from '../components/ScrollHelper';
 import { LocationContext } from '../context/LocationContext';
+import { HelperContext } from '../context/HelperContext';
+import GetLocation from 'react-native-get-location';
+
 
 const MapScreen = () => {
   const [showRoad, setShowRoad] = useState(false);
-  const [showHelper, setShowHelper] = useState(false);
+  const [helper] = useContext(HelperContext);
   // const [location] = useContext(LocationContext);
   // test value
   const location = { latitude: 31.966882, longitude: 35.988638 };
   const [focusLocation, setFocusLocation] = useState(location);
+
+  useEffect(async () => {
+    // get location every seconds
+    // const interval = setInterval(() => {
+    //   GetLocation.getCurrentPosition({
+    //     enableHighAccuracy: true,
+    //     timeout: 15000,
+    //   })
+    //   .then(location => {
+    //     // console.log(location);
+    //     // setLocation({
+    //     //   longitude: location.longitude,
+    //     //   latitude: location.latitude
+    //     // });
+    //   })
+    //   .catch(error => {
+    //       console.log('eerrrrr');
+    //       const { code, message } = error;
+    //       console.warn(code, message);
+    //   });
+    // }, 10000);
+
+    return () => {
+      // clearInterval(interval);
+    }
+  }, []);
   return (
       <View
         style={{
@@ -20,19 +50,16 @@ const MapScreen = () => {
         }}
       >
         <Map
-          setShowHelper={setShowHelper}
           showRoad={showRoad}
           setShowRoad={setShowRoad}
           focusLocation={focusLocation}
           setFocusLocation={setFocusLocation}
         />
-        {showHelper && 
+        {helper.state ? 
           <Helper
-            setShowHelper={setShowHelper} 
             setShowRoad={setShowRoad}
             setFocusLocation={setFocusLocation}
-            showHelper={showHelper}
-          />
+          /> : helper.scrollHelper && <ScrollHelper />
         }
       </View>
   );

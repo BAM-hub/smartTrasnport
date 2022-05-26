@@ -14,6 +14,7 @@ import { SocketContext } from '../context/socket';
 import { DATAContext } from '../context/DATAContext';
 import { UserContext } from '../context/UserContext';
 import { HelperContext } from '../context/HelperContext';
+import { FocusLocationContext } from '../context/FocusLocationContext';
 
 const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
@@ -27,6 +28,7 @@ const ScrollHelper = () => {
   const [helper, setHelper] = useContext(HelperContext);
   // const [drivers, setDrivers] = useState(DATA);
   const [data, setData] = useContext(DATAContext);
+  const [focucsLocation, setFocusLocation] = useContext(FocusLocationContext);
 
   useEffect(() => {
     socket.on('rideResponse', res => {
@@ -57,6 +59,7 @@ const ScrollHelper = () => {
     } catch (err) {
       console.log(err);
     }
+    setFocusLocation(data[scrollX].coords);
 
   }, [scrollX, helper]);
 

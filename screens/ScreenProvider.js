@@ -6,7 +6,6 @@ import {
 import LoadScreen from './LoadScreen';
 import RegisterScreen from './RegisterScreen';
 import MapScreen from './MapScreen';
-import GetLocation from 'react-native-get-location';
 import { SocketContext } from '../context/socket';
 import { MarkersContext } from '../context/MarkersContext';
 import { LocationContext } from '../context/LocationContext';
@@ -31,25 +30,6 @@ const ScreenProvider = () => {
       socket.disconnect();
     }
 
-    // get location every seconds
-    const interval = setInterval(() => {
-      GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 15000,
-      })
-      .then(location => {
-        // console.log(location);
-        // setLocation({
-        //   longitude: location.longitude,
-        //   latitude: location.latitude
-        // });
-      })
-      .catch(error => {
-          const { code, message } = error;
-          console.warn(code, message);
-      });
-    }, 5000);
-
     // save user in server memory
     socket?.emit('user_live',
      {...user, cords: location}
@@ -67,7 +47,6 @@ const ScreenProvider = () => {
       socket?.off('connection');
       socket?.off('join');
       socket.close();
-      clearInterval(interval);
     }
   }, [user.type, location.latitude, location.latitude]);
 

@@ -2,13 +2,13 @@ import axios from 'axios';
 import React from 'react';
 import { Polyline } from 'react-native-maps';
 import { useState, useEffect } from 'react';
-import { landmarks } from '../data';
+import { line } from '../data';
 import { API_KEY } from '../config';
 
 const Road = () => {
   const [road, setRoad] = useState(null);
   useEffect(async () => {
-    let path = landmarks.map(landmark => `${landmark.latitude},${landmark.longitude}`);
+    let path = line.map(line => line.latLong);
     path = path.join('|');
     let config = {
       method: 'get',

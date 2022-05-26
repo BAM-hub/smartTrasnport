@@ -12,11 +12,11 @@ import { useState, useContext } from 'react';
 import { DATAContext } from '../context/DATAContext';
 import { LocationContext } from '../context/LocationContext';
 import { HelperContext } from '../context/HelperContext';
+import { FocusLocationContext } from '../context/FocusLocationContext';
 
-const Map = ({
-  focusLocation,
-  setFocusLocation
-}) => {
+
+const Map = () => {
+  const [focusLocation, setFocusLocation] = useContext(FocusLocationContext);
   const [location] = useContext(LocationContext);
   const [DATA] = useContext(DATAContext);
   const [helper] = useContext(HelperContext);

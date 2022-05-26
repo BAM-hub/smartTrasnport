@@ -4,6 +4,7 @@ import {
   View,
   Dimensions,
   Text,
+  ScrollView,
   TouchableOpacity,
   StyleSheet
 } from 'react-native';
@@ -14,8 +15,12 @@ import { HelperContext } from '../context/HelperContext';
 
 const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
+const SCROLL_OFFSET = parseInt(
+  CARD_WIDTH + (SCROLL_WIDTH - CARD_WIDTH) * 2
+);
 
-const Helper = ({ setShowRoad, setFocusLocation }) => {
+const ScrollHelper = ({ setShowRoad, setFocusLocation }) => {
+  const [scrollX, setScrollX] = useState(0);
   const [user] = useContext(UserContext);
   const [helper, setHelper] = useContext(HelperContext);
   // const [drivers, setDrivers] = useState(DATA);
@@ -30,28 +35,38 @@ const Helper = ({ setShowRoad, setFocusLocation }) => {
     }
   }, []);
 
-  // useEffect(async () => {
-  //     try {
-  //       const config = {
-  //         method: 'get',
-  //         url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
-  //         headers: {}
-  //       };
-  //       const res = await axios(config);
-  //       console.log(JSON.stringify(res.data));
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  // }, []);
+  useEffect(async () => {
+    console.log(scrollX);
+      // try {
+      //   const config = {
+      //     method: 'get',
+      //     url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
+      //     headers: {}
+      //   };
+      //   const res = await axios(config);
+      //   console.log(JSON.stringify(res.data));
+      // } catch (err) {
+      //   console.log(err);
+      // }
+  }, [scrollX, helper]);
 
-  const handelCardPress = () => {
+  const handelCardPress = i => {
     // console.log(e);
     socket.emit('raidRequest', {
       userId: user.id,
-      driverId: helper.index
+      driverId: i
     } );
   }
   const socket = useContext(SocketContext);
+  const handelScroll = (e) => {
+    setScrollX(
+      parseInt(
+        parseInt(e.nativeEvent.contentOffset.x)/SCROLL_OFFSET
+      )
+    );
+    // show driver line
+    // change drivers state with new info
+  };
   return (
     <View style={styles.container}>
     <Icon 
@@ -62,39 +77,31 @@ const Helper = ({ setShowRoad, setFocusLocation }) => {
         // setShowRoad(false);
         setHelper({
           state: false,
-          index: 0,
-          scrollHelper: false
+          index: 0
         });
       }}
     />
-    <TouchableOpacity 
-      style={styles.showAll}
-      onPress={() => {
-        setHelper({
-          state: false,
-          index: 0,
-          scrollHelper: true
-        });
-
-      }}
-    >
-      <Text style={styles.invertText}>Show all</Text>
-    </TouchableOpacity>
-      
-      <View 
+      <ScrollView 
+        onScroll={e => handelScroll(e)}
+        horizontal={true}
+        pagingEnabled
         style={styles.scroll}
       >
+        {data.map((d, i) => (
           <TouchableOpacity
-            onPress={e => handelCardPress(e)}
+            onPress={e => handelCardPress(e, i)}
+            key={i}
             style={styles.card}
           >
-            <Text style={styles.text}>Captin: {data[helper.index].name}</Text>
-            <Text style={styles.text}>Line: {data[helper.index].line}</Text>
-            <Text style={styles.text}>Distance: {data[helper.index].distance}</Text>
-            <Text style={styles.text}>Estimated Time: {data[helper.index].time}</Text>
+            <Text style={styles.text}>Captin: {d.name}</Text>
+            <Text style={styles.text}>Line: {d.line}</Text>
+            <Text style={styles.text}>Distance: {d.distance}</Text>
+            <Text style={styles.text}>Estimated Time: {d.time}</Text>
             <Text style={[styles.text, {fontWeight: 'bold'}]} >Press Card To Rquest Ride</Text>
           </TouchableOpacity>
-      </View>
+        ))}
+
+      </ScrollView>
     </View>
   )
 }
@@ -129,16 +136,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     fontSize: 16
-  },
-  showAll: {
-    position: 'absolute',
-    right: 0,
-    padding: 5,
-  },
-  invertText: {
-    color: 'white',
-    fontSize: 16
   }
 });
 
-export default Helper
+export default ScrollHelper

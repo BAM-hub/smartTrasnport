@@ -6,7 +6,7 @@ export const DATAContext = createContext();
 export const DATAProvider = (props) =>{
     const [DATA, setDATA] = useState([
         {
-          name: 'Ali',
+          name: 'BAM',
           line: 'Amman As-Salt',
           distance: 'Calculating',
           time: 'Calculating',

@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native';
+import { API_KEY } from '../config';
+import axios from 'axios';
 import { SocketContext } from '../context/socket';
 import { DATAContext } from '../context/DATAContext';
 import { UserContext } from '../context/UserContext';
@@ -15,11 +17,11 @@ import { HelperContext } from '../context/HelperContext';
 const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
 
-const Helper = ({ setShowRoad, setFocusLocation }) => {
+const Helper = () => {
   const [user] = useContext(UserContext);
   const [helper, setHelper] = useContext(HelperContext);
   // const [drivers, setDrivers] = useState(DATA);
-  const [data] = useContext(DATAContext);
+  const [data, setData] = useContext(DATAContext);
 
   useEffect(() => {
     socket.on('rideResponse', res => {
@@ -30,19 +32,29 @@ const Helper = ({ setShowRoad, setFocusLocation }) => {
     }
   }, []);
 
-  // useEffect(async () => {
-  //     try {
-  //       const config = {
-  //         method: 'get',
-  //         url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
-  //         headers: {}
-  //       };
-  //       const res = await axios(config);
-  //       console.log(JSON.stringify(res.data));
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  // }, []);
+  useEffect(async () => {
+    const origin = { latitude: 31.966882, longitude: 35.988638 };
+    const destination = { latitude: 31.963817, longitude: 35.975449};
+
+    try {
+      const config = {
+        method: 'get',
+        url: 
+          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
+        headers: {}
+      };
+      const res = await axios(config);
+      const parsed = res.data.rows[0].elements[0];
+      const newData = data.map((d, i) => i === helper.index ? {
+        ...d,
+        distance: parsed.distance.text,
+        time: parsed.duration.text
+      } : d);
+      setData(newData);
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   const handelCardPress = () => {
     // console.log(e);
@@ -63,7 +75,8 @@ const Helper = ({ setShowRoad, setFocusLocation }) => {
         setHelper({
           state: false,
           index: 0,
-          scrollHelper: false
+          scrollHelper: false,
+          showRoad: false
         });
       }}
     />
@@ -73,7 +86,8 @@ const Helper = ({ setShowRoad, setFocusLocation }) => {
         setHelper({
           state: false,
           index: 0,
-          scrollHelper: true
+          scrollHelper: true,
+          showRoad: true
         });
 
       }}

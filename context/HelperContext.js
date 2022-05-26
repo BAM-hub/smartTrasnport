@@ -6,7 +6,8 @@ export const HelperProvider = (props) => {
   const [helper, setHelper] = useState({
     state: false,
     index: 0,
-    scrollHelper: false
+    scrollHelper: false,
+    showRoad: false
   });
   return (
     <HelperContext.Provider value={[helper, setHelper]}>

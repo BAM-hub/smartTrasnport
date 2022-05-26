@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native';
+import axios from 'axios';
+import { API_KEY } from '../config';
 import { SocketContext } from '../context/socket';
 import { DATAContext } from '../context/DATAContext';
 import { UserContext } from '../context/UserContext';
@@ -19,12 +21,12 @@ const SCROLL_OFFSET = parseInt(
   CARD_WIDTH + (SCROLL_WIDTH - CARD_WIDTH) * 2
 );
 
-const ScrollHelper = ({ setShowRoad, setFocusLocation }) => {
+const ScrollHelper = () => {
   const [scrollX, setScrollX] = useState(0);
   const [user] = useContext(UserContext);
   const [helper, setHelper] = useContext(HelperContext);
   // const [drivers, setDrivers] = useState(DATA);
-  const [data] = useContext(DATAContext);
+  const [data, setData] = useContext(DATAContext);
 
   useEffect(() => {
     socket.on('rideResponse', res => {
@@ -36,18 +38,26 @@ const ScrollHelper = ({ setShowRoad, setFocusLocation }) => {
   }, []);
 
   useEffect(async () => {
-    console.log(scrollX);
-      // try {
-      //   const config = {
-      //     method: 'get',
-      //     url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
-      //     headers: {}
-      //   };
-      //   const res = await axios(config);
-      //   console.log(JSON.stringify(res.data));
-      // } catch (err) {
-      //   console.log(err);
-      // }
+    try {
+      const origin = { latitude: 31.966882, longitude: 35.988638 };
+      const destination = { latitude: 31.963817, longitude: 35.975449};
+      const config = {
+        method: 'get',
+        url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
+        headers: {}
+      };
+      const res = await axios(config);
+      const parsed = res.data.rows[0].elements[0];
+      const newData = data.map((d, i) => i === scrollX ? {
+        ...d,
+        distance: parsed.distance.text,
+        time: parsed.duration.text
+      } : d);
+      setData(newData);
+    } catch (err) {
+      console.log(err);
+    }
+
   }, [scrollX, helper]);
 
   const handelCardPress = i => {
@@ -65,7 +75,6 @@ const ScrollHelper = ({ setShowRoad, setFocusLocation }) => {
       )
     );
     // show driver line
-    // change drivers state with new info
   };
   return (
     <View style={styles.container}>

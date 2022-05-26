@@ -4,20 +4,19 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { UserContext } from '../context/UserContext';
 import { HelperContext } from '../context/HelperContext';
 
-const Markers = ({ marker, setShowRoad, setShowHelper, setFocusLocation, index }) => {
+const Markers = ({ marker, setFocusLocation, index }) => {
   const [user] = useContext(UserContext);
   const [__, setHelper] = useContext(HelperContext);
 
   return (
     <Marker 
       onPress={() => {
-        setShowRoad(true);
         setHelper({
           state: true,
           index,
-          scrollHelper: false
+          scrollHelper: false,
+          showRoad: true
         });
-        console.log(marker.cords)
         setFocusLocation(marker.coords);
       }}
       style={{width: 30, height: 30}} 

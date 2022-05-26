@@ -8,7 +8,7 @@ import { API_KEY } from '../config';
 const Road = () => {
   const [road, setRoad] = useState(null);
   useEffect(async () => {
-    let path = landmarks.map((landmark, i) => `${landmark.latitude},${landmark.longitude}`);
+    let path = landmarks.map(landmark => `${landmark.latitude},${landmark.longitude}`);
     path = path.join('|');
     let config = {
       method: 'get',
@@ -19,10 +19,8 @@ const Road = () => {
 
     axios(config)
     .then(function (response) {
-      // console.log(JSON.stringify(response.data));
       let arr = response.data.snappedPoints.map(latlng => latlng.location);
       setRoad(arr);
-      // console.log(arr);
     })
     .catch(function (error) {
       console.log(error);

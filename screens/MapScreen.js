@@ -9,43 +9,66 @@ import { LocationContext } from '../context/LocationContext';
 import { HelperContext } from '../context/HelperContext';
 import GetLocation from 'react-native-get-location';
 import { UserContext } from '../context/UserContext';
+import { SocketContext } from '../context/socket';
 import RideRequest from '../components/RideRequest';
 
 
 const MapScreen = () => {
+  const socket = useContext(SocketContext);
   const [showRoad, setShowRoad] = useState(false);
   const [helper] = useContext(HelperContext);
-  const [user] = useContext(UserContext);
+  const [user, setUser] = useContext(UserContext);
   // const [location] = useContext(LocationContext);
   // test value
   const location = { latitude: 31.966882, longitude: 35.988638 };
   const [focusLocation, setFocusLocation] = useState(location);
 
-  // useEffect(async () => {
-  //   // get location every seconds
-  //   const interval = setInterval(() => {
-  //     GetLocation.getCurrentPosition({
-  //       enableHighAccuracy: true,
-  //       timeout: 15000,
-  //     })
-  //     .then(location => {
-  //       // console.log(location);
-  //       // setLocation({
-  //       //   longitude: location.longitude,
-  //       //   latitude: location.latitude
-  //       // });
-  //     })
-  //     .catch(error => {
-  //         console.log('eerrrrr');
-  //         const { code, message } = error;
-  //         console.warn(code, message);
-  //     });
-  //   }, 10000);
+  useEffect(async () => {
+    // get location every seconds
+    if(user.type === 'captin') {
+      // const interval = setInterval(() => {
+      //   GetLocation.getCurrentPosition({
+      //     enableHighAccuracy: true,
+      //     timeout: 15000,
+      //   })
+      //   .then(location => {
+      //     socket.emit('driverBroadcast', {
+      //       coords: { longitude: location.longitude,
+      //         latitude: location.latitude},
+      //       ...user
+      //     });
+      //     // console.log(location);
+      //     // setLocation({
+      //     //   longitude: location.longitude,
+      //     //   latitude: location.latitude
+      //     // });
+      //   })
+      //   .catch(error => {
+      //       const { code, message } = error;
+      //       console.warn(code, message);
+      //   });
+      // }, 10000);
+        socket.on('rideRequest', request => {
+          setUser({
+            ...user,
+            ride: {
+              ...user.ride,
+              requests: [...user.ride.requests, request]
+            }
+          })
+          console.log(user, user.ride.requests[0])
+        });
+      //   return () => {
+      //     clearInterval(interval);
+      //   }
+    } else {
+      socket.on('changeLocation', user => console.log(user))
 
-  //   return () => {
-  //     clearInterval(interval);
-  //   }
-  // }, []);
+      return () => {
+        socket.off('changeLocation')
+      }
+    }
+  }, []);
   return (
       <View
         style={{
@@ -65,7 +88,8 @@ const MapScreen = () => {
           /> : helper.scrollHelper && <ScrollHelper />
         }
         {
-          user.type === 'captin' && <RideRequest />
+          user.type === 'captin' && user?.ride?.requests?.length !== 0 && 
+            <RideRequest ride={user?.ride?.requests[0]} />
         }
       </View>
   );

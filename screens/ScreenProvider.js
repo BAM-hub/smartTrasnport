@@ -29,7 +29,15 @@ const ScreenProvider = () => {
     } else {
       socket.disconnect();
     }
-
+    if(user.type === 'captin') {
+      setUser({
+        ...user,
+        ride: {
+          passengerCount: 0,
+          requests: []
+        }
+      });
+    }
     // save user in server memory
     socket?.emit('user_live',
      {...user, cords: location}

@@ -13,6 +13,8 @@ const Markers = ({ marker, index }) => {
   return (
     <Marker 
       onPress={() => {
+        if(user.type === 'captin')
+          return;
         setHelper({
           state: true,
           index,

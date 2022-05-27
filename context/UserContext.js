@@ -7,7 +7,8 @@ export const UsertProvider = (props) => {
     name: '',
     type: '',
     line: '',
-    id: ''
+    id: '',
+    ride: ''
   });
   return(
     <UserContext.Provider value={[user, setUser]}>

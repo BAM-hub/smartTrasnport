@@ -18,14 +18,19 @@ const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
 
 const Helper = () => {
-  const [user] = useContext(UserContext);
+  const socket = useContext(SocketContext);
+  const [user, setUser] = useContext(UserContext);
   const [helper, setHelper] = useContext(HelperContext);
   // const [drivers, setDrivers] = useState(DATA);
   const [data, setData] = useContext(DATAContext);
 
   useEffect(() => {
     socket.on('rideResponse', res => {
-      console.log(res);
+      console.log(res)
+      setUser({...user, ride: {
+        seatReserved: true,
+        driverId: res.driverId
+      }});
     });
     return () => {
       socket.off('rideResponse');
@@ -57,13 +62,16 @@ const Helper = () => {
   }, []);
 
   const handelCardPress = () => {
-    // console.log(e);
+    if(user.ride)
+    socket.emit('cancelRide', {
+      user: user.id,
+      driverId: user.ride.driverId
+    });
     socket.emit('raidRequest', {
       userId: user.id,
       driverId: helper.index
-    } );
+    });
   }
-  const socket = useContext(SocketContext);
   return (
     <View style={styles.container}>
     <Icon 

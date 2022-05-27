@@ -13,6 +13,7 @@ import { DATAContext } from '../context/DATAContext';
 import { LocationContext } from '../context/LocationContext';
 import { HelperContext } from '../context/HelperContext';
 import { FocusLocationContext } from '../context/FocusLocationContext';
+import { UserContext } from '../context/UserContext';
 
 
 const Map = () => {
@@ -20,6 +21,8 @@ const Map = () => {
   const [location] = useContext(LocationContext);
   const [DATA] = useContext(DATAContext);
   const [helper] = useContext(HelperContext);
+  const [user] = useContext(UserContext);
+
   return ( 
     <MapView 
       customMapStyle={mapDarkStyle}
@@ -44,7 +47,11 @@ const Map = () => {
           index={i}
         />
        ))} 
-      { helper.showRoad && <Road  />}
+      { 
+        helper.showRoad ? <Road  />
+        : user.type === 'captin' && <Road />
+      }
+ 
     </MapView>
   );
 }

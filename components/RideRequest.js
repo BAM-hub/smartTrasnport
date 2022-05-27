@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { 
   StyleSheet,
   View,
@@ -7,12 +7,69 @@ import {
   TouchableOpacity
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { ProgressBar, Colors } from 'react-native-paper';
+import { SocketContext } from '../context/socket';
+import { UserContext } from '../context/UserContext';
+import { LocationContext } from '../context/LocationContext';
 
 const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
 
 
-const RideRequest = () => {
+const RideRequest = ({ ride }) => {
+  const [progress, setProgress] = useState(0);
+  const socket = useContext(SocketContext);
+  const [user, setUser] = useContext(UserContext);
+  const [location] = useContext(LocationContext);
+  useEffect(() => {
+    const interval = setInterval(() => setProgress(progress + 0.1), 500);
+    if(progress >= 1) 
+      rejectHandel();
+
+    return () => {
+      clearInterval(interval);
+    }
+  }, [progress]);
+
+  const rejectHandel = () => {
+      socket.emit('answer', {
+        ...ride,
+        status: 'false'
+      });
+      let filterdRequests = user.ride.requests.filter(req => req.userId !== ride.userId && req);
+      console.log(filterdRequests);
+      setUser({
+        ...user,
+        ride: {
+          ...user.ride,
+          requests: filterdRequests
+        }
+      })
+  }
+
+  const acceptHandel = () => {
+    socket.emit('answer', {
+      ...ride,
+      status: 'true'
+    });
+    setUser({
+      ...user,
+      ride: {
+        ...user.ride,
+        passengerCount: ++user.ride.passengerCount
+      }
+    });
+    let filterdRequests = user.ride.requests.filter(req => req.userId !== ride.userId && req);
+    console.log(filterdRequests);
+    setUser({
+      ...user,
+      ride: {
+        ...user.ride,
+        requests: filterdRequests
+      }
+    })
+  }
+
   return (
     <View style={styles.container}>
       <View 
@@ -22,8 +79,17 @@ const RideRequest = () => {
         name='close'
         size={30}
         style={{color: 'white'}}
+        onPress={() => rejectHandel()}
       />
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity 
+          style={styles.card}
+          onPress={() => acceptHandel()}
+        >
+            <ProgressBar
+              progress={progress}
+              color={Colors.red500}
+              style={styles.progress}
+            />
             <Text style={styles.text}>Any Available Seats ?</Text>
             <Text style={styles.text}>Touch Card To Accept.</Text>
         </TouchableOpacity>
@@ -55,8 +121,13 @@ const styles = StyleSheet.create({
     margin: SCROLL_WIDTH - CARD_WIDTH,
     marginTop: 0,
     width: CARD_WIDTH,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 10
+  },
+  progress: {
+    zIndex: 2,
+    width: CARD_WIDTH,
   },
   text: {
     color: 'black',

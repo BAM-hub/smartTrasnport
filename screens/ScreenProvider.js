@@ -10,10 +10,11 @@ import { SocketContext } from '../context/socket';
 import { MarkersContext } from '../context/MarkersContext';
 import { LocationContext } from '../context/LocationContext';
 import { UserContext } from '../context/UserContext';
+import { DATAContext } from '../context/DATAContext';
 
 const ScreenProvider = () => {
 
-  const [markers, setMarkers] = useContext(MarkersContext);
+  const [markers, setMarkers] = useContext(DATAContext);
   const [location] = useContext(LocationContext);
   const socket = useContext(SocketContext);
   const [user, setUser] = useContext(UserContext);
@@ -25,6 +26,9 @@ const ScreenProvider = () => {
       socket.on("connect", ()  => {
         console.log('connected!');
         socket.emit('join', user);
+        // save user in server memory
+        socket?.emit('user_live',
+        {...user, cords: location});
       });
     } else {
       socket.disconnect();
@@ -37,12 +41,7 @@ const ScreenProvider = () => {
           requests: []
         }
       });
-    }
-    // save user in server memory
-    socket?.emit('user_live',
-     {...user, cords: location}
-    );
-    
+    }    
     // listen to initial coords
     socket?.on('initial-coords', markerCords => {
       console.log('markers: ', markerCords);

@@ -4,9 +4,11 @@ import { IconFill } from '@ant-design/icons-react-native';
 import GetLocation from 'react-native-get-location';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LocationContext } from '../context/LocationContext';
+import { FocusLocationContext } from '../context/FocusLocationContext';
 
 const LoadScreen = ({ setUser }) => {
   const [location, setLocation] = useContext(LocationContext);
+  const [focusLocation, setFocusLocation] = useContext(FocusLocationContext);
   const getData = async () => {
     try {
       const auth = await AsyncStorage.getItem('@BamLocation');
@@ -31,6 +33,10 @@ const LoadScreen = ({ setUser }) => {
     .then(location => {
       // console.log(location);
       setLocation({
+        longitude: location.longitude,
+        latitude: location.latitude
+      });
+      setFocusLocation({
         longitude: location.longitude,
         latitude: location.latitude
       });

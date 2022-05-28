@@ -20,34 +20,39 @@ const MapScreen = () => {
   const [user, setUser] = useContext(UserContext);
   // const [location] = useContext(LocationContext);
   // test value
-  const location = { latitude: 31.966882, longitude: 35.988638 };
+  // const location = { latitude: 31.966882, longitude: 35.988638 };
   const [focusLocation, setFocusLocation] = useState(location);
+  const [location, setLocation] = useContext(LocationContext);
 
   useEffect(async () => {
     // get location every seconds
     if(user.type === 'captin') {
-      // const interval = setInterval(() => {
-      //   GetLocation.getCurrentPosition({
-      //     enableHighAccuracy: true,
-      //     timeout: 15000,
-      //   })
-      //   .then(location => {
-      //     socket.emit('driverBroadcast', {
-      //       coords: { longitude: location.longitude,
-      //         latitude: location.latitude},
-      //       ...user
-      //     });
-      //     // console.log(location);
-      //     // setLocation({
-      //     //   longitude: location.longitude,
-      //     //   latitude: location.latitude
-      //     // });
-      //   })
-      //   .catch(error => {
-      //       const { code, message } = error;
-      //       console.warn(code, message);
-      //   });
-      // }, 10000);
+      const interval = setInterval(() => {
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        })
+        .then(location => {
+          socket.emit('driverBroadcast', {
+            coords: { longitude: location.longitude,
+              latitude: location.latitude},
+            ...user
+          });
+          // console.log(location);
+          setLocation({
+            longitude: location.longitude,
+            latitude: location.latitude
+          });
+          setFocusLocation({
+            longitude: location.longitude,
+            latitude: location.latitude
+          });
+        })
+        .catch(error => {
+            const { code, message } = error;
+            console.warn(code, message);
+        });
+      }, 10000);
         socket.on('rideRequest', request => {
           setUser({
             ...user,
@@ -58,9 +63,22 @@ const MapScreen = () => {
           })
           console.log(user, user.ride.requests[0])
         });
-      //   return () => {
-      //     clearInterval(interval);
-      //   }
+        socket.on('cancelRide', ride => {
+          let filterdRequests = user.ride.requests.filter(req => req.userId !== ride.userId && req);
+          console.log(filterdRequests);
+          setUser({
+            ...user,
+            ride: {
+              passengerCount: --user.ride.passengerCount,
+              requests: filterdRequests
+            }
+          })
+        });
+        return () => {
+          clearInterval(interval);
+          socket.off('cancelRide');
+          socket.off('rideRequest');
+        }
     } else {
       socket.on('changeLocation', user => console.log(user))
 

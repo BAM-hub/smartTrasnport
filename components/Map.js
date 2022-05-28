@@ -1,10 +1,11 @@
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import {
   StyleSheet,
   View,
   Dimensions,
   Text
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { mapDarkStyle } from '../config';
 import Road from './Road';
 import Markers from './Markers';
@@ -47,6 +48,15 @@ const Map = () => {
           index={i}
         />
        ))} 
+         <Marker 
+          style={{width: 30, height: 30}} 
+          coordinate={location}
+        >
+          {user.type === 'captin' ? 
+            <Icon name='bus' size={30} style={{color: 'white'}} /> 
+            : <Icon name='human-greeting' size={20} style={{color: 'white'}} />
+          }
+        </Marker>
       { 
         helper.showRoad ? <Road  />
         : user.type === 'captin' && <Road />

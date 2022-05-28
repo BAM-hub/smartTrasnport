@@ -36,6 +36,8 @@ const ScreenProvider = () => {
     if(user.type === 'captin') {
       setUser({
         ...user,
+        distance: 'Calculating',
+        time: 'Calculating',
         ride: {
           passengerCount: 0,
           requests: []

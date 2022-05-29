@@ -13,6 +13,7 @@ import { SocketContext } from '../context/socket';
 import { DATAContext } from '../context/DATAContext';
 import { UserContext } from '../context/UserContext';
 import { HelperContext } from '../context/HelperContext';
+import { LocationContext } from '../context/LocationContext';
 
 const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
@@ -23,9 +24,12 @@ const Helper = () => {
   const [helper, setHelper] = useContext(HelperContext);
   // const [drivers, setDrivers] = useState(DATA);
   const [data, setData] = useContext(DATAContext);
+  const [location] = useContext(LocationContext);
 
   useEffect(() => {
     socket.on('rideResponse', res => {
+      if(res.userId !== user.id)
+        return;
       console.log(res)
       setUser({...user, ride: {
         seatReserved: true,
@@ -38,14 +42,11 @@ const Helper = () => {
   }, []);
 
   useEffect(async () => {
-    const origin = { latitude: 31.966882, longitude: 35.988638 };
-    const destination = { latitude: 31.963817, longitude: 35.975449};
-
     try {
       const config = {
         method: 'get',
         url: 
-          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
+          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${data[helper.index].coords.latitude},${data[helper.index].coords.longitude}&destinations=${location.latitude},${location.longitude}&units=km&key=${API_KEY}`,
         headers: {}
       };
       const res = await axios(config);
@@ -69,7 +70,8 @@ const Helper = () => {
     });
     socket.emit('raidRequest', {
       userId: user.id,
-      driverId: helper.index
+      driverId: helper.index,
+      location
     });
   }
   return (

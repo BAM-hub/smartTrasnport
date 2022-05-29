@@ -14,21 +14,22 @@ import { DATAContext } from '../context/DATAContext';
 
 const ScreenProvider = () => {
 
-  const [markers, setMarkers] = useContext(DATAContext);
+  const [DATA, setDATA] = useContext(DATAContext);
   const [location] = useContext(LocationContext);
   const socket = useContext(SocketContext);
   const [user, setUser] = useContext(UserContext);
 
   useEffect(() => {
-
     if(user.type !== '' && location.longitude !== 0 && location.latitude !== 0) {
       socket.connect();
-      socket.on("connect", ()  => {
         console.log('connected!');
-        socket.emit('join', user);
-        // save user in server memory
-        socket?.emit('user_live',
-        {...user, cords: location});
+        socket.emit('join', {...user, coords: location});
+      // listen to initial coords
+      socket.emit('user_live', {...user, coords: location});
+      socket.on('initial-coords', markerCords => {
+        if(markerCords.id === user.id) {
+          setDATA(markerCords.markerCords);
+        }
       });
     } else {
       socket.disconnect();
@@ -44,15 +45,17 @@ const ScreenProvider = () => {
         }
       });
     }    
-    // listen to initial coords
-    socket?.on('initial-coords', markerCords => {
-      console.log('markers: ', markerCords);
-        if(markers.length !== 0)
-          return;
-        setMarkers(markerCords);
+
+    socket.on('new_user', newUser => {
+      if(newUser.type !== user.type && user.coords) {
+        setDATA(prevState => [...prevState, user]);
+      }
     });
 
     return () => {
+      socket.off('new_user');
+      socket.off('user_live');
+      socket.off('initial-coords');
       socket?.off('connection');
       socket?.off('join');
       socket.close();

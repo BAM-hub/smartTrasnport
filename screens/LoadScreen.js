@@ -31,7 +31,6 @@ const LoadScreen = ({ setUser }) => {
       timeout: 15000,
     })
     .then(location => {
-      // console.log(location);
       setLocation({
         longitude: location.longitude,
         latitude: location.latitude

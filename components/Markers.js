@@ -27,8 +27,8 @@ const Markers = ({ marker, index }) => {
       coordinate={marker.coords}
     >
       {user.type === 'passenger' ? 
-        <Icon name='bus' size={30} style={{color: 'white'}} /> 
-        : <Icon name='human-greeting' size={20} style={{color: 'white'}} />
+        <Icon name='bus' size={30} style={{color: 'limegreen'}} /> 
+        : <Icon name='human-greeting' size={20} style={{color: 'limegreen'}} />
       }
     </Marker>
   );

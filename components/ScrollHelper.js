@@ -15,6 +15,7 @@ import { DATAContext } from '../context/DATAContext';
 import { UserContext } from '../context/UserContext';
 import { HelperContext } from '../context/HelperContext';
 import { FocusLocationContext } from '../context/FocusLocationContext';
+import { LocationContext } from '../context/LocationContext';
 
 const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
@@ -23,8 +24,9 @@ const SCROLL_OFFSET = parseInt(
 );
 
 const ScrollHelper = () => {
+  const [location] = useContext(LocationContext);
   const [scrollX, setScrollX] = useState(0);
-  const [user] = useContext(UserContext);
+  const [user, setUser] = useContext(UserContext);
   const [helper, setHelper] = useContext(HelperContext);
   // const [drivers, setDrivers] = useState(DATA);
   const [data, setData] = useContext(DATAContext);
@@ -32,7 +34,13 @@ const ScrollHelper = () => {
 
   useEffect(() => {
     socket.on('rideResponse', res => {
-      console.log(res);
+      if(res.userId !== user.id)
+        return;
+      console.log(res)
+      setUser({...user, ride: {
+        seatReserved: true,
+        driverId: res.driverId
+      }});
     });
     return () => {
       socket.off('rideResponse');
@@ -41,11 +49,10 @@ const ScrollHelper = () => {
 
   useEffect(async () => {
     try {
-      const origin = { latitude: 31.966882, longitude: 35.988638 };
-      const destination = { latitude: 31.963817, longitude: 35.975449};
       const config = {
         method: 'get',
-        url: `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.latitude},${origin.longitude}&destinations=${destination.latitude},${destination.longitude}&units=km&key=${API_KEY}`,
+        url: 
+          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${data[scrollX].coords.latitude},${data[scrollX].coords.longitude}&destinations=${location.latitude},${location.longitude}&units=km&key=${API_KEY}`,
         headers: {}
       };
       const res = await axios(config);
@@ -67,7 +74,8 @@ const ScrollHelper = () => {
     // console.log(e);
     socket.emit('raidRequest', {
       userId: user.id,
-      driverId: i
+      driverId: i,
+      location
     } );
   }
   const socket = useContext(SocketContext);

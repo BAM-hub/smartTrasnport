@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { mapDarkStyle } from '../config';
 import Road from './Road';
 import Markers from './Markers';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { DATAContext } from '../context/DATAContext';
 import { LocationContext } from '../context/LocationContext';
 import { HelperContext } from '../context/HelperContext';
@@ -40,7 +40,7 @@ const Map = () => {
         longitudeDelta: 0.0021,
       }}
     >
-      {DATA.map((marker, i) => (
+      {DATA?.map((marker, i) => (
         <Markers
           key={i}
           marker={marker}
@@ -53,8 +53,8 @@ const Map = () => {
           coordinate={location}
         >
           {user.type === 'captin' ? 
-            <Icon name='bus' size={30} style={{color: 'white'}} /> 
-            : <Icon name='human-greeting' size={20} style={{color: 'white'}} />
+            <Icon name='bus' size={30} style={{color: 'limegreen'}} /> 
+            : <Icon name='human-greeting' size={20} style={{color: 'limegreen'}} />
           }
         </Marker>
       { 

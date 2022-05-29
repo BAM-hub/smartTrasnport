@@ -10,7 +10,9 @@ import { HelperContext } from '../context/HelperContext';
 import GetLocation from 'react-native-get-location';
 import { UserContext } from '../context/UserContext';
 import { SocketContext } from '../context/socket';
+import { DATAContext } from '../context/DATAContext';
 import RideRequest from '../components/RideRequest';
+import Info from '../components/Info';
 
 
 const MapScreen = () => {
@@ -18,11 +20,24 @@ const MapScreen = () => {
   const [showRoad, setShowRoad] = useState(false);
   const [helper] = useContext(HelperContext);
   const [user, setUser] = useContext(UserContext);
-  // const [location] = useContext(LocationContext);
+  const [data, setData] = useContext(DATAContext);
   // test value
-  // const location = { latitude: 31.966882, longitude: 35.988638 };
   const [focusLocation, setFocusLocation] = useState(location);
   const [location, setLocation] = useContext(LocationContext);
+
+  useEffect(() => {
+    socket.on('user_disconnect', user => {
+      console.log(user)
+      console.log('original data', data);
+      const newData = data.filter(d => d.id !== user.id && d);
+      console.log('new data', newData)
+      setData(newData);
+    });
+
+    return () => {
+      socket.off('user_disconnect');
+    }
+  });
 
   useEffect(async () => {
     // get location every seconds
@@ -39,10 +54,7 @@ const MapScreen = () => {
             ...user
           });
           // console.log(location);
-          setLocation({
-            longitude: location.longitude,
-            latitude: location.latitude
-          });
+
           setFocusLocation({
             longitude: location.longitude,
             latitude: location.latitude
@@ -58,10 +70,9 @@ const MapScreen = () => {
             ...user,
             ride: {
               ...user.ride,
-              requests: [...user.ride.requests, request]
+              requests: [...user.ride?.requests, request]
             }
           })
-          console.log(user, user.ride.requests[0])
         });
         socket.on('cancelRide', ride => {
           let filterdRequests = user.ride.requests.filter(req => req.userId !== ride.userId && req);
@@ -80,7 +91,10 @@ const MapScreen = () => {
           socket.off('rideRequest');
         }
     } else {
-      socket.on('changeLocation', user => console.log(user))
+      socket.on('changeLocation', user => {
+        const newData = data.map(d => d.id === user.id ? user : d);
+        setData(newData);
+      })
 
       return () => {
         socket.off('changeLocation')
@@ -108,6 +122,9 @@ const MapScreen = () => {
         {
           user.type === 'captin' && user?.ride?.requests?.length !== 0 && 
             <RideRequest ride={user?.ride?.requests[0]} />
+        }
+        {
+          user?.ride?.seatReserved && <Info />
         }
       </View>
   );

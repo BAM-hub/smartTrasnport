@@ -31,6 +31,14 @@ const LoadScreen = ({ setUser }) => {
       timeout: 15000,
     })
     .then(location => {
+      // const origin = { latitude: 31.966882, longitude: 35.988638 };
+
+      // setLocation({
+      //   ...origin
+      // });
+      // setFocusLocation({
+      //   ...origin
+      // })
       setLocation({
         longitude: location.longitude,
         latitude: location.latitude

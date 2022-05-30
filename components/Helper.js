@@ -26,21 +26,6 @@ const Helper = () => {
   const [data, setData] = useContext(DATAContext);
   const [location] = useContext(LocationContext);
 
-  useEffect(() => {
-    socket.on('rideResponse', res => {
-      if(res.userId !== user.id)
-        return;
-      console.log(res)
-      setUser({...user, ride: {
-        seatReserved: true,
-        driverId: res.driverId
-      }});
-    });
-    return () => {
-      socket.off('rideResponse');
-    }
-  }, []);
-
   useEffect(async () => {
     try {
       const config = {
@@ -63,14 +48,9 @@ const Helper = () => {
   }, []);
 
   const handelCardPress = () => {
-    if(user.ride)
-    socket.emit('cancelRide', {
-      user: user.id,
-      driverId: user.ride.driverId
-    });
-    socket.emit('raidRequest', {
+    socket.emit('ride_request', {
       userId: user.id,
-      driverId: helper.index,
+      driverId: helper.driverId,
       location
     });
   }

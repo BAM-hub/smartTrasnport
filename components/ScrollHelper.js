@@ -24,6 +24,7 @@ const SCROLL_OFFSET = parseInt(
 );
 
 const ScrollHelper = () => {
+  const socket = useContext(SocketContext);
   const [location] = useContext(LocationContext);
   const [scrollX, setScrollX] = useState(0);
   const [user, setUser] = useContext(UserContext);
@@ -31,21 +32,6 @@ const ScrollHelper = () => {
   // const [drivers, setDrivers] = useState(DATA);
   const [data, setData] = useContext(DATAContext);
   const [focucsLocation, setFocusLocation] = useContext(FocusLocationContext);
-
-  useEffect(() => {
-    socket.on('rideResponse', res => {
-      if(res.userId !== user.id)
-        return;
-      console.log(res)
-      setUser({...user, ride: {
-        seatReserved: true,
-        driverId: res.driverId
-      }});
-    });
-    return () => {
-      socket.off('rideResponse');
-    }
-  }, []);
 
   useEffect(async () => {
     try {
@@ -72,13 +58,12 @@ const ScrollHelper = () => {
 
   const handelCardPress = i => {
     // console.log(e);
-    socket.emit('raidRequest', {
+    socket.emit('ride_request', {
       userId: user.id,
-      driverId: i,
+      driverId: data[i].id,
       location
     } );
   }
-  const socket = useContext(SocketContext);
   const handelScroll = (e) => {
     setScrollX(
       parseInt(
@@ -109,7 +94,7 @@ const ScrollHelper = () => {
       >
         {data.map((d, i) => (
           <TouchableOpacity
-            onPress={e => handelCardPress(e, i)}
+            onPress={() => handelCardPress(i)}
             key={i}
             style={styles.card}
           >

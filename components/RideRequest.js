@@ -16,11 +16,12 @@ const SCROLL_WIDTH = Dimensions.get('window').width/1.2 + 10;
 const CARD_WIDTH = Dimensions.get('window').width/1.4;
 
 
-const RideRequest = ({ ride }) => {
+const RideRequest = ({ requests, setRequests }) => {
   const [progress, setProgress] = useState(0);
   const socket = useContext(SocketContext);
   const [user, setUser] = useContext(UserContext);
-  const [location] = useContext(LocationContext);
+  const [ride, setRide] = useState(requests[0]);
+
   useEffect(() => {
     const interval = setInterval(() => setProgress(progress + 0.1), 500);
     if(progress >= 1) 
@@ -30,6 +31,11 @@ const RideRequest = ({ ride }) => {
       clearInterval(interval);
     }
   }, [progress]);
+  
+  	useEffect(() => {
+      if(requests.length !== 0)
+        setRide(requests[0]);
+    }, [requests]);
 
   const rejectHandel = () => {
       socket.emit('answer', {
@@ -45,6 +51,8 @@ const RideRequest = ({ ride }) => {
           requests: filterdRequests
         }
       })
+      setRequests(filterdRequests);
+      setProgress(0);
   }
 
   const acceptHandel = () => {
@@ -67,7 +75,9 @@ const RideRequest = ({ ride }) => {
         ...user.ride,
         requests: filterdRequests
       }
-    })
+    });
+    setRequests(filterdRequests);
+    setProgress(0);
   }
 
   return (

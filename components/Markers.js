@@ -17,6 +17,7 @@ const Markers = ({ marker, index }) => {
           return;
         setHelper({
           state: true,
+          driverId: marker.id,
           index,
           scrollHelper: false,
           showRoad: true

@@ -4,28 +4,7 @@ export const DATAContext = createContext();
 
 
 export const DATAProvider = (props) =>{
-    const [DATA, setDATA] = useState([
-        // {
-        //   name: 'BAM',
-        //   line: 'Amman As-Salt',
-        //   distance: 'Calculating',
-        //   time: 'Calculating',
-        //   coords: {
-        //     latitude: 31.966882,
-        //     longitude: 35.988638
-        //   }
-        // },
-        // {
-        //   name: 'Ali',
-        //   line: 'Amman As-Salt',
-        //   distance: 'Calculating',
-        //   time: 'Calculating',
-        //   coords: {
-        //     latitude: 31.963817,
-        //     longitude: 35.975449
-        //   }
-        // },
-      ]);
+    const [DATA, setDATA] = useState([]);
 
     return (
         <DATAContext.Provider value={[DATA, setDATA]}>

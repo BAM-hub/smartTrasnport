@@ -1,5 +1,5 @@
 # smartTrasnport
-## React Native app that show Buss Nearby and Reservs seats and more.
+## React Native app that help you view Busses Nearby and Reservs seats and more.
 
 This app Provides the user information about transportation for the user you can see availbe busses and more for the buss driver you see your transport line and recive reide requests.
 
